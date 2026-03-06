@@ -1,0 +1,218 @@
+# 🔗 AWS Serverless URL Shortener
+
+A **Serverless URL Shortener** built using Amazon Web Services.
+This project converts long URLs into short links with optional custom aliases and tracks click analytics.
+
+The system is built using a **fully serverless architecture**, meaning no servers need to be managed.
+
+---
+
+# 🚀 Features
+
+* 🔗 Shorten long URLs instantly
+* 📝 Custom alias support (example: `/hotstar`)
+* 📊 Click analytics (track how many times a link is opened)
+* ⚡ Fully serverless architecture
+* 🌐 Frontend hosted on S3
+* 📈 Monitoring with CloudWatch
+
+---
+
+# 🏗️ Architecture
+
+```
+User
+  ↓
+Frontend (Amazon S3)
+  ↓
+Amazon API Gateway
+  ↓
+AWS Lambda (Shorten Function)
+  ↓
+Amazon DynamoDB
+```
+
+Redirect Flow:
+
+```
+User opens short URL
+        ↓
+Amazon API Gateway
+        ↓
+AWS Lambda (Redirect Function)
+        ↓
+Amazon DynamoDB lookup
+        ↓
+Redirect to original URL
+```
+
+---
+
+# 🧰 AWS Services Used
+
+| Service            | Purpose                                 |
+| ------------------ | --------------------------------------- |
+| Amazon S3          | Hosts the frontend website              |
+| Amazon API Gateway | Exposes REST API endpoints              |
+| AWS Lambda         | Backend logic for shortening & redirect |
+| Amazon DynamoDB    | Stores URL mappings                     |
+| Amazon CloudWatch  | Logs and monitoring                     |
+
+---
+
+# ⚙️ Lambda Functions
+
+Two Lambda functions are used in this architecture.
+
+### 1️⃣ URL Shortening Function
+
+Function name:
+
+```
+url-shortener-shorten
+```
+
+Responsibilities:
+
+* Accept long URL
+* Generate short code
+* Store mapping in DynamoDB
+* Return short URL
+
+API Endpoint:
+
+```
+POST /shorten
+```
+
+---
+
+### 2️⃣ URL Redirect Function
+
+Function name:
+
+```
+url-shortener-redirect
+```
+
+Responsibilities:
+
+* Receive short code
+* Fetch original URL from DynamoDB
+* Increment click counter
+* Redirect user
+
+API Endpoint:
+
+```
+GET /{short_code}
+```
+
+---
+
+# 📊 DynamoDB Table
+
+Table name:
+
+```
+url-mappings
+```
+
+Primary key:
+
+```
+short_code (String)
+```
+
+Example record:
+
+| short_code | long_url            | clicks |
+| ---------- | ------------------- | ------ |
+| hotstar    | https://hotstar.com | 12     |
+| netflix    | https://netflix.com | 7      |
+
+---
+
+# 🌐 Frontend
+
+The frontend is a simple HTML interface hosted using **Amazon S3 Static Website Hosting**.
+
+Users can:
+
+* Enter a long URL
+* Add an optional custom alias
+* Generate a short link
+
+Example result:
+
+```
+https://<api-id>.execute-api.us-east-1.amazonaws.com/hotstar
+```
+
+---
+
+# 📈 Monitoring
+
+Application logs and metrics are monitored using **Amazon CloudWatch**.
+
+Tracked metrics include:
+
+* Lambda execution logs
+* API Gateway request logs
+* Error tracking
+
+A CloudWatch dashboard was also created to monitor **EC2 CPU Utilization** as part of infrastructure monitoring practice.
+
+---
+
+# 📂 Project Structure
+
+```
+aws-serverless-url-shortener
+│
+├── index.html
+├── lambda
+│   ├── shorten.py
+│   └── redirect.py
+├── README.md
+└── screenshots
+```
+
+---
+
+# 🧪 Example Usage
+
+Input:
+
+```
+https://google.com
+```
+
+Output:
+
+```
+https://<api-id>.execute-api.us-east-1.amazonaws.com/google
+```
+
+Opening the short link redirects the user to the original URL.
+
+---
+
+# 🎯 Future Improvements
+
+Possible enhancements:
+
+* Custom domain using Route53
+* QR code generator for shortened links
+* Link expiration with DynamoDB TTL
+* Admin dashboard for analytics
+* CI/CD pipeline for automated deployment
+
+---
+
+# 👨‍💻 Author
+
+**Sai Rohith**
+DevOps & Cloud Enthusiast
+
+GitHub: https://github.com/sairohithtadangi7-coder
