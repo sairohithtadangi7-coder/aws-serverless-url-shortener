@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>URL Shortener</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    background: linear-gradient(135deg,#6e8efb,#a777e3);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
+
+.container{
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    width:350px;
+    text-align:center;
+    box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+
+input{
+    width:90%;
+    padding:10px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    padding:10px 20px;
+    background:#6e8efb;
+    border:none;
+    color:white;
+    cursor:pointer;
+    border-radius:5px;
+}
+
+button:hover{
+    background:#5a75e6;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>URL Shortener</h2>
+
+<input id="urlInput" placeholder="Enter URL">
+
+<input id="aliasInput" placeholder="Custom alias (optional)">
+
+<br><br>
+
+<button onclick="shorten()">Shorten URL</button>
+
+<p id="result"></p>
+
+</div>
+
+<script>
+
+async function shorten(){
+
+let longUrl = document.getElementById("urlInput").value;
+let alias = document.getElementById("aliasInput").value;
+
+if(!longUrl){
+document.getElementById("result").innerHTML="Please enter a URL";
+return;
+}
+
+try{
+
+let response = await fetch(
+"https://008jmqrlo7.execute-api.us-east-1.amazonaws.com/shorten",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+url: longUrl,
+alias: alias
+})
+}
+);
+
+let data = await response.json();
+
+document.getElementById("result").innerHTML =
+"Short URL: <a href='"+data.short_url+"' target='_blank'>"+data.short_url+"</a>";
+
+}
+catch(error){
+
+document.getElementById("result").innerHTML="Error connecting to API";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>
